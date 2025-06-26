@@ -35,7 +35,7 @@ button {
     font-size: 24px;
 }
 
-#Clear {
+#Backspace, #Clear {
     width: 100px;
     height: 28px;
     font-size: 16px;

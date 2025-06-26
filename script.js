@@ -26,7 +26,7 @@ let op = '';
 let result = '';
 
 buttonsGenerate = [
-    ['Clear'],
+    ['Backspace', 'Clear'],
     ['7', '8', '9', '÷'],
     ['4', '5', '6', '×'],
     ['1', '2', '3', '−'],
@@ -34,6 +34,28 @@ buttonsGenerate = [
 ]
 
 wrapper = document.querySelector('#wrapper');
+body = document.querySelector('body');
+body.addEventListener('keydown', (e) => {
+    let key = e.key;
+    keyButtonConversion = {'-': '−', '*': '×', '/': '÷'}
+    if (key in keyButtonConversion) {
+        key = keyButtonConversion[key];
+    }
+    [a, op, b, result] = handleClick(key, a, op, b);
+
+    btn = document.getElementById(key);
+    btn.style.border = '3px solid red';
+});
+body.addEventListener('keyup', (e) => {
+    let key = e.key;
+    keyButtonConversion = {'-': '−', '*': '×', '/': '÷'}
+    if (key in keyButtonConversion) {
+        key = keyButtonConversion[key];
+    }
+
+    btn = document.getElementById(key);
+    btn.style.border = '1px solid gray';
+});
 
 for (const row of buttonsGenerate) {
     div = document.createElement('div');
@@ -83,7 +105,7 @@ function calculatorDisplay(a, b, result) {
     if (returnValue.slice(-1) === '.') {
         return returnValue;
     } else {
-        return +Number(returnValue).toFixed(5);
+        return Number(returnValue);
     }
 }
 
@@ -97,7 +119,7 @@ function handleClick(btnText, a, op, b) {
             b = '';
     }
     if (result !== '') {
-        if (btnType === 'op') {
+        if (btnType === 'op' || btnType === 'Backspace') {
             a = result;
         }
         result = '';
@@ -135,16 +157,23 @@ function handleClick(btnText, a, op, b) {
         }
     }
 
+    //Backspace
+    if (btnType === "Backspace") {
+        if (b !== '') {
+            b = b.slice(0, -1);
+        } else {
+            a = a.slice(0, -1);
+        }
+    }
+
     //Number too long
     let numbersOmitted = '';
 
     if (a.length > 7) {
         a = a.slice(0, 7);
-        numbersOmitted = '...';
     }
     if (b.length > 7) {
         b = b.slice(0, 7);
-        numbersOmitted = '...';
     }
     if (result.length > 7) {
         result = result.slice(0, 7);
