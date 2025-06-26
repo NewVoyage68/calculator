@@ -2,22 +2,42 @@
     font-family: Roboto, sans-serif;
 }
 
-#wrapper {
+body {
+    height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid black;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 20px;
+}
+
 #display {
     border: 2px solid black;
-    font-size: 35px;
-    width: 200px;
+    font-size: 40px;
+    width: 180px;
     height: 50px;
+    text-align: right;
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: lightgray;
 }
 
 button {
     width: 50px;
     height: 50px;
     font-size: 24px;
+}
+
+#Clear {
+    width: 100px;
+    height: 28px;
+    font-size: 16px;
+    margin-bottom: 10px;
 }

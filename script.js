@@ -6,14 +6,16 @@ const divide = (a, b) => a / b;
 function operate(a, op, b) {
     a = Number(a);
     b = Number(b);
+    let returnValue;
+    
     switch (op) {
         case '+':
             return add(a, b);
-        case '-':
+        case '−':
             return subtract(a, b);
-        case '*':
+        case '×':
             return multiply(a, b);
-        case '/':
+        case '÷':
             return divide(a, b);
     }
 }
@@ -21,12 +23,13 @@ function operate(a, op, b) {
 let a = '';
 let b = '';
 let op = '';
+let result = '';
 
 buttonsGenerate = [
     ['Clear'],
-    ['7', '8', '9', '/'],
-    ['4', '5', '6', '*'],
-    ['1', '2', '3', '-'],
+    ['7', '8', '9', '÷'],
+    ['4', '5', '6', '×'],
+    ['1', '2', '3', '−'],
     ['0', '.', '=', '+']
 ]
 
@@ -38,9 +41,20 @@ for (const row of buttonsGenerate) {
         btn = document.createElement('button');
         btn.textContent = text;
         btn.id = text;
+
         btn.addEventListener('click', (e) => {
-            [a, op, b] = handleClick(e.target.id, a, op, b)
+            [a, op, b, result] = handleClick(e.target.id, a, op, b);
         });
+        btn.addEventListener('mousedown', (e) => {
+            e.target.style.border = '3px solid red';
+        });
+        btn.addEventListener('mouseup', (e) => {
+            e.target.style.border = '1px solid gray';
+        });
+        btn.addEventListener('mouseleave', (e) => {
+            e.target.style.border = '1px solid gray';
+        });
+
         div.appendChild(btn);
     }
     wrapper.appendChild(div);
@@ -49,34 +63,60 @@ for (const row of buttonsGenerate) {
 function getBtnType(btnText) {
     if ('0123456789'.includes(btnText)) {
         return 'num';
-    } else if ('+-*/'.includes(btnText)) {
+    } else if ('+−×÷'.includes(btnText)) {
         return 'op';
     } else {
         return btnText;
     }
 }
 
-function calculatorDisplay(a, b) {
-    if (b === '') {
-        return a;
+function calculatorDisplay(a, b, result) {
+    let returnValue;
+    if (result !== '') {
+        returnValue = String(result);
+    } else if (b === '') {
+        returnValue = a;
     } else {
-        return b;
+        returnValue = b;
+    }
+
+    if (returnValue.slice(-1) === '.') {
+        return returnValue;
+    } else {
+        return +Number(returnValue).toFixed(5);
     }
 }
 
 function handleClick(btnText, a, op, b) {
     const btnType = getBtnType(btnText);
     const display = document.querySelector('#display');
-
+    
+    if (btnType === 'Clear') {
+            a = '';
+            op = '';
+            b = '';
+    }
+    if (result !== '') {
+        if (btnType === 'op') {
+            a = result;
+        }
+        result = '';
+    }
     if (op === '') {
         if (btnType === 'num') {
             a += btnText;
         }
-        if (a !== '' && btnType === 'op') {
+        if (btnType === '.' && !a.includes('.')) {
+            a += btnText;
+        }
+        if (a !== '' && a.slice(-1) !== '.' && btnType === 'op') {
             op = btnText;
         }
     } else {
         if (btnType === 'num') {
+            b += btnText;
+        }
+        if (btnType === '.' && !b.includes('.')) {
             b += btnText;
         }
         if (btnType === 'op') {
@@ -84,12 +124,33 @@ function handleClick(btnText, a, op, b) {
             b = '';
         }
         if (b !== '' && btnType === '=') {
-            a = operate(a, op, b);
+            result = String(operate(a, op, b));
+            if (result === 'Infinity' || result === 'NaN') {
+                alert("Don't try that!");
+            }
+
+            a = '';
             op = '';
             b = '';
         }
     }
-    console.log(`${a}${op}${b}`);
-    display.textContent = calculatorDisplay(a, b);
-    return [a, op, b];
+
+    //Number too long
+    let numbersOmitted = '';
+
+    if (a.length > 7) {
+        a = a.slice(0, 7);
+        numbersOmitted = '...';
+    }
+    if (b.length > 7) {
+        b = b.slice(0, 7);
+        numbersOmitted = '...';
+    }
+    if (result.length > 7) {
+        result = result.slice(0, 7);
+        numbersOmitted = '...';
+    }
+    
+    display.textContent = calculatorDisplay(a, b, result) + numbersOmitted;
+    return [a, op, b, result];
 }
